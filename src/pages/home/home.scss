@@ -1,0 +1,47 @@
+.home {
+  box-sizing: border-box;
+  height: 100vh;
+  .home-register {
+    padding: 20px;
+    display: flex;
+    gap: 20px;
+    input {
+      background-color: #f0f2f5;
+      border: none;
+      padding: 10px 10px;
+      border-radius: 30px;
+      box-sizing: border-box;
+      white-space: normal;
+      width: 250px;
+      height: 50px;
+    }
+
+    input:focus {
+      outline: none;
+    }
+  }
+  .home-btn {
+    display: flex;
+    align-items: center;
+    background-color: #f0f2f5;
+    cursor: pointer;
+    border-radius: 20px;
+    padding: 10px;
+    height: 30px;
+  }
+  .home-title {
+    padding: 20px;
+  }
+  .home-content {
+    display: flex;
+    justify-content: space-between;
+    height: 100%;
+    margin-right: 350px;
+  }
+  .home-chat {
+    display: flex;
+    gap: 20px;
+    align-items: self-end;
+    flex-wrap: wrap;
+  }
+}
