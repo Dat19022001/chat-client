@@ -69,7 +69,9 @@ const Home = () => {
         return acc;
       }, {});
       if (resultObject.id === idUser) {
-        const check = storageField.some((item) => item.idChat === parseInt(topic));
+        const check = storageField.some(
+          (item) => item.idChat === parseInt(topic)
+        );
         if (!check) {
           dispatch(setMessRecevied(topic));
         }
@@ -80,7 +82,7 @@ const Home = () => {
       client.end();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [storageField]);
+  }, [storageField,listFriend]);
 
   useEffect(() => {
     if (updateListFriend !== null) {
