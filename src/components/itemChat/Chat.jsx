@@ -78,7 +78,7 @@ const Chat = ({ item, idUser }) => {
     ]);
   };
   useEffect(() => {
-    const mqttBroker = "ws://172.18.0.1:9001"; // Thay đổi địa chỉ MQTT broker nếu cần
+    const mqttBroker = "ws://192.168.8.19:9001"; // Thay đổi địa chỉ MQTT broker nếu cần
     const client = mqtt.connect(mqttBroker);
     // const client = mqttClient
 

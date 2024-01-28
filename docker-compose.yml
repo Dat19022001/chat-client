@@ -3,6 +3,6 @@ services:
   frontend:
     build:
       context: .
-    container_name: rass
+    container_name: chat-client
     ports: 
       - "3003:83" # map 80 in container => 3000 in local

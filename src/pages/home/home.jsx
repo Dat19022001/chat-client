@@ -43,7 +43,7 @@ const Home = () => {
     setValue(value);
   };
   useEffect(() => {
-    const mqttBroker = "ws://172.18.0.1:9001"; // Thay đổi địa chỉ MQTT broker nếu cần
+    const mqttBroker = "ws://192.168.8.19:9001"; // Thay đổi địa chỉ MQTT broker nếu cần
     const client = mqtt.connect(mqttBroker);
 
     client.on("connect", () => {
@@ -53,7 +53,7 @@ const Home = () => {
     });
 
     client.on("message", (topic, message) => {
-      console.log(message.toString(), topic);
+      // console.log(message.toString(), topic);
       const inputString = message.toString();
 
       // Loại bỏ ký tự `{` và `}` từ chuỗi
