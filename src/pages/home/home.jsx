@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import mqtt from "mqtt";
 import Chat from "../../components/itemChat/Chat";
 import { setMessRecevied } from "../../redux/slices/test";
+import ChatBot from "../../components/ChatBot/ChatBot";
 const Home = () => {
   const [idUser, setIdUser] = useState(localStorage.getItem("id") || null);
   const [name, setName] = useState(localStorage.getItem("name") || null);
@@ -14,7 +15,7 @@ const Home = () => {
     JSON.parse(localStorage.getItem("list")) || []
   );
   const [value, setValue] = useState("");
-  const { updateListFriend } = useSelector((states) => states.app);
+  const { updateListFriend,openMessRasa } = useSelector((states) => states.app);
   const { storageField } = useSelector((states) => states.test);
   const dispatch = useDispatch();
 
@@ -125,6 +126,8 @@ const Home = () => {
         )}
         <Sidebar listFriend={listFriend} idUser={idUser} />
         <div className="home-chat">
+          {openMessRasa &&  <ChatBot/>}
+         
           {storageField.map((item, index) => (
             <Chat item={item} idUser={idUser} key={item.idChat} />
           ))}
