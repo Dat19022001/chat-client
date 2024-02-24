@@ -1,21 +1,23 @@
 .chat {
-  width: 300px;
+  width: 600px;
   background-color: #ffffff;
   box-shadow: 0 12px 28px 0 rgba(0, 0, 0, 0.1), 0 2px 4px 0 rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
   border-radius: 6px;
   .chat-history {
-    height: 300px;
+    height: 600px;
     overflow-y: auto;
     padding: 10px;
   }
   .user-message {
     display: flex;
     justify-content: flex-end;
+    margin-bottom: 10px;
   }
   .bot-message {
-    display: flex;
     justify-content: flex-start;
+    display: flex;
+    margin-bottom: 10px;
   }
   .bot-message {
     p {
@@ -25,9 +27,11 @@
       padding: 5px;
       border-radius: 10px;
       min-width: 50px;
-      max-width: 200px;
+      max-width: 500px;
       margin: 0;
-      margin-bottom: 5px;
+      // margin-bottom: 5px;
+      overflow-wrap: break-word;
+      white-space: pre-line;
     }
   }
   .user-message {
@@ -38,10 +42,12 @@
       padding: 5px;
       border-radius: 10px;
       min-width: 50px;
-      max-width: 200px;
+      max-width: 500px;
       margin: 0;
-      margin-bottom: 5px;
+      // margin-bottom: 5px;
       color: #ffffff;
+      overflow-wrap: break-word;
+      white-space: pre-line;
     }
   }
   input {
@@ -51,7 +57,7 @@
     border-radius: 30px;
     box-sizing: border-box;
     white-space: normal;
-    width: 250px;
+    width: 550px;
   }
   input:focus {
     outline: none;
@@ -93,9 +99,8 @@
   }
   .chat-history {
     img {
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
+      width: 200px;
+      height: auto;
     }
   }
   .chat-header {
@@ -118,4 +123,62 @@
       font-size: 20px;
     }
   }
+}
+#wave {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f0f0;
+  padding: 5px;
+  border-radius: 10px;
+  min-width: 50px;
+  max-width: 200px;
+  height: 15px;
+  margin: 0;
+  margin-bottom: 5px;
+  overflow-wrap: break-word;
+  white-space: pre-line;
+}
+#wave .dot {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  margin-right: 2px;
+  background: #60f;
+  animation: wave 1s linear infinite;
+  animation-delay: -0.9s;
+}
+#wave .dot.two {
+  animation-delay: -0.7s;
+}
+#wave .dot:nth-child(3) {
+  animation-delay: -0.6s;
+}
+
+@keyframes wave {
+  0%,
+  60%,
+  100% {
+    transform: initial;
+  }
+  30% {
+    transform: translateY(-10px);
+  }
+}
+
+.button-item {
+  display: inline-block;
+  align-items: center;
+  background-color: rgb(0, 132, 255);
+  color: #ffffff;
+  padding: 5px;
+  border-radius: 10px;
+  min-width: 50px;
+  max-width: 200px;
+  margin: 0;
+  // margin-bottom: 5px;
+  overflow-wrap: break-word;
+  white-space: pre-line;
+  cursor: pointer;
 }

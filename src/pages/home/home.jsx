@@ -8,6 +8,7 @@ import mqtt from "mqtt";
 import Chat from "../../components/itemChat/Chat";
 import { setMessRecevied } from "../../redux/slices/test";
 import ChatBot from "../../components/ChatBot/ChatBot";
+import { setUpdateListFriend } from "../../redux/slices/app";
 const Home = () => {
   const [idUser, setIdUser] = useState(localStorage.getItem("id") || null);
   const [name, setName] = useState(localStorage.getItem("name") || null);
@@ -17,6 +18,7 @@ const Home = () => {
   const [value, setValue] = useState("");
   const { updateListFriend,openMessRasa } = useSelector((states) => states.app);
   const { storageField } = useSelector((states) => states.test);
+  const [mqttClient,setMqttClient] = useState(null) 
   const dispatch = useDispatch();
 
   const Register1 = () => {
@@ -34,6 +36,7 @@ const Home = () => {
         localStorage.setItem("id", uniqueId);
         setIdUser(uniqueId);
         localStorage.setItem("list", JSON.stringify(res.data.user.listFriend));
+        mqttClient.publish(`register`, "check");
       },
       (err) => {
         console.log(err);
@@ -48,13 +51,18 @@ const Home = () => {
     const client = mqtt.connect(mqttBroker);
 
     client.on("connect", () => {
+      client.subscribe("register")
       listFriend.forEach((topic) => {
         client.subscribe(`${topic}`);
       });
+      setMqttClient(client)
     });
 
     client.on("message", (topic, message) => {
-      // console.log(message.toString(), topic);
+      console.log(message.toString(), topic);
+      if(topic === "register") {
+        dispatch(setUpdateListFriend(Date.now()))
+      }
       const inputString = message.toString();
 
       // Loại bỏ ký tự `{` và `}` từ chuỗi
@@ -82,6 +90,7 @@ const Home = () => {
     return () => {
       client.end();
     };
+    
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [storageField,listFriend]);
 

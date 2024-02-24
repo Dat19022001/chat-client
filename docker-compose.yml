@@ -5,4 +5,4 @@ services:
       context: .
     container_name: chat-client
     ports: 
-      - "3003:83" # map 80 in container => 3000 in local
+      - "3002:81" # map 80 in container => 3000 in local

@@ -6,11 +6,13 @@ import mqtt from "mqtt";
 import { getMessageDB, sentMessage, sentMessageDB } from "../../services/chats";
 import { useDispatch } from "react-redux";
 import { setOpenMessRasa } from "../../redux/slices/app";
+import Account from "../../assets/account.jpg"
 
 const ChatBot = () => {
   const [mess, setMess] = useState([]);
   const [mqttClient, setMqttClient] = useState(null);
   const [value, setValue] = useState("");
+  const [load, setLoad] = useState(false);
   const chatHistoryRef = useRef();
   const id = localStorage.getItem("id");
   const dispatch = useDispatch()
@@ -56,7 +58,7 @@ const ChatBot = () => {
         });
         if (mess.length !== 0) {
           setMess(mess)
-        } 
+        }
 
       },
       (err) => console.log(err)
@@ -71,7 +73,7 @@ const ChatBot = () => {
   const handle = (message) => {
     setMess((prevMess) => [
       ...prevMess,
-      { content: message.value, sender: message.id, isText: message.isText },
+      { content: message.value, sender: message.id, isText: message.isText,payload: message.payload },
     ]);
   };
   useEffect(() => {
@@ -85,7 +87,7 @@ const ChatBot = () => {
     });
 
     client.on("message", (topic, message) => {
-      console.log(message.toString());
+      // console.log(message.toString());
       const inputString = message.toString();
 
       // Loại bỏ ký tự `{` và `}` từ chuỗi
@@ -103,28 +105,38 @@ const ChatBot = () => {
 
       if (resultObject.id === "user") {
         const params = {
+          sender: id,
           message: resultObject.value,
         };
+        setLoad(true)
         sentMessage(
           params,
           (res) => {
+            setLoad(false)
+            console.log(res.data)
             res.data.forEach((item) => {
               if (item.text) {
                 const formattedMessage = `{value=${item.text}$id=bot}`;
-                const formattedMessageT = { value: item.text, id: "bot", isText: true };
+                const formattedMessageT = { value: item.text, id: "bot", isText: "text", payload: "" };
                 client.publish(`rasa/${id}`, formattedMessage);
                 handle(formattedMessageT);
+                if (item.buttons) {
+                  item.buttons.forEach((button) => {
+                    const formattedMessageT = { value: button.title, id: "bot", isText: "button", payload: button.payload };
+                    handle(formattedMessageT);
+                  })
+                }
               } else {
-                const formattedMessage = `{value=${item.image}$id=bot}`;
-                const formattedMessageT = { value: item.image, id: "bot", isText: false };
+                const formattedMessage = `{value=${item.attachment.image}$id=bot}`;
+                const formattedMessageT = { value: item.attachment.image, id: "bot", isText: "image", payload: "" };
                 client.publish(`rasa/${id}`, formattedMessage);
                 handle(formattedMessageT);
               }
             })
-
           },
           (err) => {
             console.log(err);
+            setLoad(false)
           }
         );
       }
@@ -150,7 +162,7 @@ const ChatBot = () => {
       if (mqttClient && mqttClient.connected && value.trim() !== "") {
         // Đảm bảo định dạng JSON nhất quán
         const formattedMessage = `{value=${value.toString()}$id=user}`;
-        const formattedMessageT = { value: value, id: "user", isText: true };
+        const formattedMessageT = { value: value, id: "user", isText: "text", payload: "" };
         mqttClient.publish(`rasa/${id}`, formattedMessage);
         handle(formattedMessageT);
         setValue("");
@@ -162,13 +174,19 @@ const ChatBot = () => {
     if (mqttClient && mqttClient.connected && value.trim() !== "") {
       // Đảm bảo định dạng JSON nhất quán
       const formattedMessage = `{value=${value.toString()}$id=user}`;
-      const formattedMessageT = { value: value, id: "user", isText: true };
-      mqttClient.publish(`rasa/response`, formattedMessage);
+      const formattedMessageT = { value: value, id: "user", isText: "text", payload: "" };
+      mqttClient.publish(`rasa/${id}`, formattedMessage);
       handle(formattedMessageT);
       setValue("");
       sentMess(value, id, "rasa")
     }
   };
+  const updateName = (value,text) => {
+    const formattedMessage = `{value=${value}$id=user}`;
+    const formattedMessageT = { value: text, id: "user", isText: "text", payload: "" };
+    mqttClient.publish(`rasa/${id}`, formattedMessage);
+    handle(formattedMessageT);
+  }
 
   return (
     <div className="chat1">
@@ -176,7 +194,7 @@ const ChatBot = () => {
         <div className="chat-header">
           <div className="chat-title">
             <img
-              src="https://scontent.xx.fbcdn.net/v/t1.30497-1/143086968_2856368904622192_1959732218791162458_n.png?stp=dst-png_p100x100&_nc_cat=1&ccb=1-7&_nc_sid=db1b99&_nc_eui2=AeFX5JER1T-hUgp40eEfWzS2so2H55p0AlGyjYfnmnQCUUiS0k3AiFTbEKP_NS4T6nFxgs0kLY_wlp-ZbDu9rjfV&_nc_ohc=FaPLa6I4CdUAX8BdIwK&_nc_ad=z-m&_nc_cid=0&_nc_ht=scontent.xx&oh=00_AfB5Ri94PG3vCu_NpkcauO6deYa-_28Hh9spQDOm-tGhdg&oe=65BC2178"
+              src={Account}
               alt=""
             />
             <div className="chat-name">
@@ -190,6 +208,7 @@ const ChatBot = () => {
           </div>
         </div>
         <div className="chat-history" ref={chatHistoryRef}>
+
           {mess.map((message, index) => {
             return (
               <div
@@ -197,16 +216,30 @@ const ChatBot = () => {
                 className={
                   message.sender === "user" ? "user-message" : "bot-message"
                 }
-              // className={
-              //   message.idSent === id ? "user-message" : "bot-message"
-              // }
               >
-                {/* <p>{message.content}</p> */}
-                {message.isText ? <p>{message.content}</p> : <img src={message.content} alt="" />}
-                {/* {message.sender === "user" ? "You: " : "Bot: "} */}
+
+                {message.isText === "text" && <p>{message.content}</p>}
+                {message.isText === "image" && <img src={message.content} alt="" />}
+                <div className="button" style={{ display: "flex", gap: 10 }}>
+                  {message.isText === "button" && <div className="button-item" onClick={()=> updateName(message.payload,message.content)}>{message.content}</div>}
+                </div>
+
               </div>
             );
           })}
+          <div
+            className={"bot-message"}
+          >
+            <div>
+              {load &&
+                <div id="wave">
+                  <span className="dot one"></span>
+                  <span className="dot two"></span>
+                  <span className="dot three"></span>
+                </div>}
+
+            </div>
+          </div>
         </div>
         <div className="chat-input">
           <input

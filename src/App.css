@@ -36,3 +36,20 @@
     transform: rotate(360deg);
   }
 }
+
+
+h1.marquee {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  animation: marquee 10s linear infinite; /* Thay đổi thời gian theo ý muốn */
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
